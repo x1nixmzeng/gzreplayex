@@ -1,0 +1,19 @@
+# D7
+
+*.dcu
+*.cfg
+*.dof
+*.ddp
+
+# D7 Backups
+*.~pas
+*.~dpr
+*.~ddp
+*.~dfm
+
+# Other
+
+GunZ Clients/
+Replay Samples/
+My Format Description.txt
+*.jpg
