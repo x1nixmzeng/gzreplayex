@@ -634,6 +634,7 @@ begin
       Exit;
     end;
 
+    {
     if pktHead.size > 5 then
     begin
       gzrFile.Read( pktDesc, sizeof( gzrPacketDesc ) );
@@ -656,6 +657,7 @@ begin
 
     end
     else
+    }
       // warning that packet is empty?
       gzrFile.Position := gzrFile.Position + pktHead.size;
 

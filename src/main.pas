@@ -12,7 +12,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, XPMan, StdCtrls, ZLIBSTREAM, gzreplay, Menus, ComCtrls, Lua, LuaLib,
-  LuaContextBase, gzrecFrmAbout ;
+  LuaContextBase, gzrecFrmAbout, gzrecReader, ExtCtrls ;
 
 type
   TPluginInfo = packed record
@@ -114,6 +114,9 @@ type
     GunZ2Commands1: TMenuItem;
     N2: TMenuItem;
     Plugins1: TMenuItem;
+    Button1: TButton;
+    Timer1: TTimer;
+    Button2: TButton;
     procedure FormCreate(Sender: TObject);
     procedure ListBox1Click(Sender: TObject);
     procedure About1Click(Sender: TObject);
@@ -121,7 +124,19 @@ type
     procedure Replay1Click(Sender: TObject);
     procedure GunZ2Commands1Click(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
   private
+    replayInfo : TReplayReaderInfo;
+
+    replayFile : TMemoryStream;  
+    replayData : gzrClass;
+
+    replayThread : TReplayReader;
+
+    procedure ReplayLoadedCallback(Sender: TObject); 
+
     procedure ApplyGunZChatter(ChatLog: String);
     procedure AddString(str:string;col:char);
 
@@ -138,6 +153,8 @@ var
   Form1: TForm1;
 
 implementation
+
+uses gzrecFrmProg;
 
 {$R *.dfm}
 
@@ -501,6 +518,69 @@ end;
 procedure TForm1.Exit1Click(Sender: TObject);
 begin
   Form1.Close;
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+
+  if replayFile <> nil then
+    exit;
+
+  if not OpenDialog1.Execute then Exit;
+
+  // quickfix: check gunz2 replay type
+
+  replayFile := TMemoryStream.Create;
+  replayFile.LoadFromFile( OpenDialog1.Files[0] );
+
+  replayThread := TReplayReader.Create( replayFile, replayInfo );
+  replayThread.OnTerminate := ReplayLoadedCallback;
+
+  // setup ui
+  Timer1.Enabled := True;
+
+  Form3.Open;  
+
+  // wait for thread    
+
+end;
+
+procedure TForm1.ReplayLoadedCallback(Sender: TObject);
+begin
+
+  // set timer update to 1
+  // then update stuff?
+
+  replayFile.Free;
+  replayFile := nil;
+
+end;
+
+procedure TForm1.Timer1Timer(Sender: TObject);
+begin
+
+  if replayFile <> nil then
+  begin
+    Form3.Label1.Caption := replayInfo.Status;
+    Form3.Label3.Caption := Format('%d b', [replayFile.Position]);
+    Form3.Label5.Caption := Format('%d b', [replayInfo.Size]);
+
+    Form3.ProgressBar1.Max      := replayInfo.Size;
+    Form3.ProgressBar1.Position := replayFile.Position;
+
+  end
+  else
+  begin
+   // enable the close button (unless error occured?)
+    Form3.allowClose := True;
+    Form3.Button1.Enabled := True;
+    Timer1.Enabled := False;
+  end;
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+  Form3.ShowModal;
 end;
 
 end.
