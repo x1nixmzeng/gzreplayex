@@ -87,6 +87,7 @@ begin
     // Open Library
     LuaContext := Lua_Open();
     luaopen_base(LuaContext);
+    luaopen_math(LuaContext); // new
 
     // Create Object List on initialization
     CallBackList := TList.Create;

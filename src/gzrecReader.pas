@@ -81,6 +81,8 @@ begin
     end;
   end;
 
+  gzrStream.SaveToFile('gzrdebug.gzr');
+
   gzrInfo.Progress := 50;
   gzrInfo.Size     := gzrStream.Size;
   gzrInfo.Status   := 'Processing..';

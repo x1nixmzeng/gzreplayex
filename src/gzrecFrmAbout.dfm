@@ -1,12 +1,12 @@
 object Form2: TForm2
   Left = 767
   Top = 338
-  Width = 203
-  Height = 181
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
-  BorderStyle = bsSizeToolWin
+  BorderStyle = bsToolWindow
   Caption = 'About'
+  ClientHeight = 154
+  ClientWidth = 195
   Color = clWhite
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -412,9 +412,9 @@ object Form2: TForm2
       FFFF}
   end
   object Label2: TLabel
-    Left = 8
+    Left = 34
     Top = 80
-    Width = 65
+    Width = 39
     Height = 13
     Alignment = taRightJustify
     Caption = 'Author'
@@ -433,9 +433,9 @@ object Form2: TForm2
     Caption = 'x1nixmzeng'
   end
   object Label4: TLabel
-    Left = 8
+    Left = 31
     Top = 104
-    Width = 65
+    Width = 42
     Height = 13
     Alignment = taRightJustify
     Caption = 'Version'
@@ -454,9 +454,9 @@ object Form2: TForm2
     Caption = '1.01'
   end
   object Label6: TLabel
-    Left = 8
+    Left = 16
     Top = 128
-    Width = 65
+    Width = 57
     Height = 13
     Alignment = taRightJustify
     Caption = 'Build Date'

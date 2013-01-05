@@ -4,9 +4,13 @@
 	example2.lua
 --]]
 
-
 -- Expects a table with 2 strings
 function gzreplayRegister()
+
+	randEXP = math.random(0,999999)
+
+	lvl = GetLevelFromExp( randEXP )
+	nxt = ExpToNextLevel( randEXP )
 
 	return
 	{
@@ -15,7 +19,8 @@ function gzreplayRegister()
 		-- Plugin description
 		'This script has a callback when a replay is loaded.\n' ..
 		'It also calls a function hook:\n\n' ..
-		'With EXP 684604 you are level ' .. GetLevelFromExp( 684604 ) .. '!'
+		'With ' .. randEXP .. ' EXP you are level ' .. lvl ..
+		' with ' .. nxt .. ' EXP needed for level ' .. lvl+1 .. ' !'
 	}
 
 end

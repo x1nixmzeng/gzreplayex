@@ -64,7 +64,6 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
-    Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     Label10: TLabel;
@@ -106,9 +105,6 @@ type
     Label45: TLabel;
     Label46: TLabel;
     Label47: TLabel;
-    Label48: TLabel;
-    Label49: TLabel;
-    Label50: TLabel;
     Label51: TLabel;
     Label52: TLabel;
     Label53: TLabel;
@@ -116,7 +112,6 @@ type
     Label55: TLabel;
     Label56: TLabel;
     Label57: TLabel;
-    Label58: TLabel;
     Label59: TLabel;
     Label60: TLabel;
     Label61: TLabel;
@@ -128,26 +123,13 @@ type
     Label67: TLabel;
     Help1: TMenuItem;
     About1: TMenuItem;
-    SetHooks1: TMenuItem;
     OpenDialog2: TOpenDialog;
-    N2: TMenuItem;
-    Plugins1: TMenuItem;
     Timer1: TTimer;
     GunZReplay1: TMenuItem;
     OpenGunZ2Replay1: TMenuItem;
-    N3: TMenuItem;
-    Label68: TLabel;
-    Label69: TLabel;
-    Label70: TLabel;
-    Label71: TLabel;
-    Label72: TLabel;
-    Label73: TLabel;
-    Label74: TLabel;
-    Label75: TLabel;
     Label76: TLabel;
     Label77: TLabel;
     Label78: TLabel;
-    Label79: TLabel;
     Label80: TLabel;
     Label81: TLabel;
     Label65: TLabel;
@@ -163,14 +145,34 @@ type
     Label90: TLabel;
     Label91: TLabel;
     Label92: TLabel;
+    Label48: TLabel;
+    Label49: TLabel;
+    Label58: TLabel;
+    Label79: TLabel;
+    Label50: TLabel;
+    Label68: TLabel;
+    Label71: TLabel;
+    Label69: TLabel;
+    Label73: TLabel;
+    Label7: TLabel;
+    Label70: TLabel;
+    Label72: TLabel;
+    Label74: TLabel;
+    Label75: TLabel;
+    Label93: TLabel;
+    Scripts1: TMenuItem;
+    Reload1: TMenuItem;
+    N4: TMenuItem;
+    About2: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure ListBox1Click(Sender: TObject);
     procedure About1Click(Sender: TObject);
-    procedure SetHooks1Click(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure GunZReplay1Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure Plugins1Click(Sender: TObject);
+    procedure Reload1Click(Sender: TObject);
   private
     replayInfo    : TReplayReaderInfo; // info
     replayStarted : TDateTime;         // to avoid reusing the time unit
@@ -183,6 +185,10 @@ type
     procedure AddString(str:string;col:char);
 
     function ReloadPlugins() : integer;
+
+    procedure ResetUI;
+
+    procedure ShowErrorPopup( Msg: string; Title: String = '' );
 
   public
     Plugins : TList;
@@ -205,6 +211,21 @@ uses gzrecFrmProg;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   ListBox1.ItemIndex := 0;
+  ResetUI;
+end;
+
+procedure TForm1.ShowErrorPopup( Msg: string; Title: String = '' );
+begin
+  if Title = '' then
+    Title := Caption;
+
+  MessageBoxA
+  (
+    Handle,
+    PChar( Msg ),
+    PChar( Title ),
+    MB_OK or MB_ICONWARNING
+  );
 end;
 
 procedure TForm1.ListBox1Click(Sender: TObject);
@@ -387,11 +408,6 @@ begin
 end;
 
 
-procedure TForm1.SetHooks1Click(Sender: TObject);
-begin
-  ReloadPlugins();
-end;
-
 procedure TForm1.ShowPluginInfo(Sender: TObject);
 var
   pluginitem : TReplayPlugin;
@@ -528,6 +544,8 @@ var
 
   menu         : TMenuItem;
   pluginitem   : TReplayPlugin;
+
+  hasIssue     : Boolean;
 begin
 
   SetCurrentDirectory(PAnsiChar(ExtractFilePath(ParamStr(0))));
@@ -536,7 +554,7 @@ begin
   begin
     if not Lua.OpenLibrary() then
     begin
-      ShowMessage('Cannot load Lua library');
+      ShowErrorPopup('Cannot load Lua library');
       Exit;
     end;
   end;
@@ -555,35 +573,55 @@ begin
 
   while LuaScriptRes = 0 do
   begin
-    pluginitem := TReplayPlugin.Create;
 
+    // Create new context
+
+    pluginitem := TReplayPlugin.Create;
     pluginitem.L := TLua.Create;
 
-    // setup hooks here
-//    pluginitem.L.SetFunctionHook('LuaGetLevelFromExp', 'GetLevelFromExp', Form1);    
+    hasIssue := True; // guilty until otherwise proven (whitelisting)
+
+    pluginitem.L.SetFunctionHook('ExpToNextLevel',  'LuaExpToNextLevel',  Form1);
     pluginitem.L.SetFunctionHook('GetLevelFromExp', 'LuaGetLevelFromExp', Form1);
-    
-    pluginitem.L.LoadScript(LuaSearch.Name);
 
-    // Check for global function
-    lua_getglobal(pluginitem.l.LuaContext, 'gzreplayRegister');
-    if lua_isfunction(pluginitem.l.LuaContext, -1) then
+    if pluginitem.L.LoadScript(LuaSearch.Name) <> 0 then
+      ShowErrorPopup( luaL_checkstring(pluginitem.l.LuaContext, -1 ), 'Script Error' )
+    else
     begin
-      // It exists, so call it!
-      lua_call(pluginitem.l.LuaContext, 0, 1);
+      // Check for global function
+      lua_getglobal(pluginitem.l.LuaContext, 'gzreplayRegister');
+      if lua_isfunction(pluginitem.l.LuaContext, -1) then
+      begin
+        if lua_pcall(pluginitem.l.LuaContext, 0, 1, 0) <> 0 then
+          ShowErrorPopup( luaL_checkstring(pluginitem.l.LuaContext, -1 ), 'Script Error' )
+        else
+        begin
+          lua_pushnil( pluginitem.l.LuaContext );
+          lua_next( pluginitem.l.LuaContext, -1 );
 
-      lua_pushnil( pluginitem.l.LuaContext );
-      lua_next( pluginitem.l.LuaContext, -1 );
+          pluginitem.Name := luaL_checkstring( pluginitem.l.LuaContext, -1 );
+          pluginitem.Info := luaL_checkstring( pluginitem.l.LuaContext, 0 );
 
-      pluginitem.Name := luaL_checkstring( pluginitem.l.LuaContext, -1 );
-      pluginitem.Info := luaL_checkstring( pluginitem.l.LuaContext, 0 );
+          plugins.Add(pluginitem);
 
-      menu := TMenuItem.Create( MainMenu1 );
-      menu.Caption := ExtractFileName(LuaSearch.Name);
-      menu.OnClick := ShowPluginInfo;
-      MainMenu1.Items[1].Items[2].Add(menu);
+          menu := TMenuItem.Create( MainMenu1 );
+          menu.Caption := ExtractFileName(LuaSearch.Name);
+          menu.OnClick := ShowPluginInfo;
+          MainMenu1.Items[1].Items[2].Add(menu);
 
-      plugins.Add(pluginitem);
+          hasIssue := False;
+        end;
+      end
+      else
+        // no register function
+        ShowErrorPopup( LuaSearch.Name+ ': missing gzreplayRegister function', 'Script Error' )
+    end;
+
+    if hasIssue then
+    begin
+      // Clear unused Lua context
+      pluginitem.L.Free;
+      pluginitem.Free;
     end;
 
     LuaScriptRes := FindNext(LuaSearch);
@@ -640,7 +678,7 @@ begin
 
   if replayInfo.ReadResult = GZR_SUCCESS then
   begin
-    // TODO: UI RESET
+    ResetUI;
 
     // THEN
     Label19.Caption := ExtractFileName( OpenDialog1.Files[0] );
@@ -737,6 +775,47 @@ begin
     plugins := nil;
   end;
 
+end;
+
+procedure TForm1.ResetUI;
+const
+  NOMSG = '--';
+begin
+  // Properties
+  // > General
+  Label19.Caption  := NOMSG;
+  Label18.Caption  := NOMSG;
+
+  // > Replay Specific
+  Label1.Caption   := NOMSG;
+  Label16.Caption  := NOMSG;
+  Label17.Caption  := NOMSG;
+  Label20.Caption  := NOMSG;
+  Label43.Caption  := NOMSG;
+
+  // Settings
+
+  // Characters
+
+  // Statistics
+
+  // More Statistics
+
+  // Chat Logs
+  
+end;
+
+procedure TForm1.Plugins1Click(Sender: TObject);
+begin
+  if TMenuItem(Sender).Count = 0 then
+  begin
+    ShowMessage('Plugin information');
+  end;
+end;
+
+procedure TForm1.Reload1Click(Sender: TObject);
+begin
+  ReloadPlugins();
 end;
 
 end.
