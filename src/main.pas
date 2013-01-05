@@ -1,4 +1,23 @@
 (*
+
+
+<STR id="UI_CC_LIST_03_01">Axium Gun Knight</STR>
+<STR id="UI_CC_LIST_03_02">Travia Gun Fighter</STR>
+<STR id="UI_CC_LIST_03_03">Axium Assassin</STR>
+<STR id="UI_CC_LIST_03_04">Travia Scout</STR>
+<STR id="UI_CC_LIST_03_05">Axium Gun Priest</STR>
+<STR id="UI_CC_LIST_03_06">Travia Doctor</STR>
+
+
+for decent heatmap examples see
+
+http://www.bungie.net/Stats/Reach/Heatmaps.aspx?player= xx
+
+more statistics examples
+
+http://www.planetwot.com/playerStats/?name=azzlack_professor
+
+
   gzreplayex
   Written by x1nixmzeng
 
@@ -12,13 +31,17 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, XPMan, StdCtrls, ZLIBSTREAM, gzreplay, Menus, ComCtrls, Lua, LuaLib,
-  LuaContextBase, gzrecFrmAbout, gzrecReader, ExtCtrls ;
+  LuaContextBase, gzrecFrmAbout, gzrecReader, ExtCtrls, gzexperience ;
 
 type
-  TPluginInfo = packed record
+  TReplayPlugin = class
+  public
     Name,
     Info  : String;
+    L : TLua; // lua context
   end;
+
+  PTReplayPlugin = ^TReplayPlugin;
 
   TForm1 = class(TForm)
     XPManifest1: TXPManifest;
@@ -97,10 +120,8 @@ type
     Label59: TLabel;
     Label60: TLabel;
     Label61: TLabel;
-    Label62: TLabel;
     Label63: TLabel;
     Label64: TLabel;
-    Label65: TLabel;
     OpenDialog1: TOpenDialog;
     RichEdit1: TRichEdit;
     Label66: TLabel;
@@ -115,6 +136,33 @@ type
     GunZReplay1: TMenuItem;
     OpenGunZ2Replay1: TMenuItem;
     N3: TMenuItem;
+    Label68: TLabel;
+    Label69: TLabel;
+    Label70: TLabel;
+    Label71: TLabel;
+    Label72: TLabel;
+    Label73: TLabel;
+    Label74: TLabel;
+    Label75: TLabel;
+    Label76: TLabel;
+    Label77: TLabel;
+    Label78: TLabel;
+    Label79: TLabel;
+    Label80: TLabel;
+    Label81: TLabel;
+    Label65: TLabel;
+    Label82: TLabel;
+    Label83: TLabel;
+    Label84: TLabel;
+    Label62: TLabel;
+    Label85: TLabel;
+    Label86: TLabel;
+    Label87: TLabel;
+    Label88: TLabel;
+    Label89: TLabel;
+    Label90: TLabel;
+    Label91: TLabel;
+    Label92: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure ListBox1Click(Sender: TObject);
     procedure About1Click(Sender: TObject);
@@ -122,6 +170,7 @@ type
     procedure Exit1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure GunZReplay1Click(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     replayInfo    : TReplayReaderInfo; // info
     replayStarted : TDateTime;         // to avoid reusing the time unit
@@ -136,10 +185,12 @@ type
     function ReloadPlugins() : integer;
 
   public
-    PluginInfo : array of TPluginInfo;
+    Plugins : TList;
     procedure ShowPluginInfo(Sender: TObject);
   published
     function HelloWorld(LuaState: TLuaState): Integer;
+    function LuaExpToNextLevel(LuaState: TLuaState): Integer;
+    function LuaGetLevelFromExp(LuaState: TLuaState): Integer;        
   end;
 
 var
@@ -309,6 +360,33 @@ begin
   
 end;
 
+function TForm1.LuaExpToNextLevel(LuaState: TLuaState): Integer;
+var
+  exp : cardinal;
+begin
+
+  exp := luaL_checkinteger(LuaState, -1);
+
+  CalculateExpTable;
+  lua_pushinteger(luastate, ExpToNextLevel( exp ));
+
+  Result := 1;
+end;
+
+function TForm1.LuaGetLevelFromExp(LuaState: TLuaState): Integer;
+var
+  exp : cardinal;
+begin
+
+  exp := luaL_checkinteger(LuaState, -1);
+
+  CalculateExpTable;
+  lua_pushinteger(luastate, GetLevelFromExp( exp ));
+  
+  Result := 1;
+end;
+
+
 procedure TForm1.SetHooks1Click(Sender: TObject);
 begin
   ReloadPlugins();
@@ -316,17 +394,17 @@ end;
 
 procedure TForm1.ShowPluginInfo(Sender: TObject);
 var
-  mindex : integer;
+  pluginitem : TReplayPlugin;
 begin
 
   // Find subitem index from sender
-  mindex := TMenuItem(Sender).MenuIndex;
+  pluginitem := Plugins.Items[ TMenuItem(Sender).MenuIndex ];
 
   MessageBoxA
   (
     Handle,
-    PChar( PluginInfo[mindex].Info ),
-    PChar( PluginInfo[mindex].Name ),
+    PChar( pluginitem.Info ),
+    PChar( pluginitem.Name ),
     MB_OK or MB_ICONINFORMATION
   );
 end;
@@ -445,11 +523,11 @@ end;
    }
 function TForm1.ReloadPlugins: Integer;
 var
-  i,  // result index
   LuaScriptRes : Integer;
   LuaSearch    : TSearchRec;
-  l            : TLua;
+
   menu         : TMenuItem;
+  pluginitem   : TReplayPlugin;
 begin
 
   SetCurrentDirectory(PAnsiChar(ExtractFilePath(ParamStr(0))));
@@ -466,46 +544,50 @@ begin
   SetCurrentDirectory('.\Scripts');
 
   MainMenu1.Items[1].Items[2].Clear;
-  SetLength( PluginInfo, 0 );
+
+  // hopefully this clears some memory too!
+  if plugins = nil then
+    plugins := TList.Create
+  else
+    plugins.Clear;
 
   LuaScriptRes := FindFirst('*.lua', faAnyFile, LuaSearch);
 
-  i:=0;
-
   while LuaScriptRes = 0 do
   begin
-    l := TLua.Create;
+    pluginitem := TReplayPlugin.Create;
 
-    l.SetFunctionHook('HelloWorld', 'HelloWorld', Form1);
-    l.LoadScript(LuaSearch.Name);
+    pluginitem.L := TLua.Create;
+
+    // setup hooks here
+//    pluginitem.L.SetFunctionHook('LuaGetLevelFromExp', 'GetLevelFromExp', Form1);    
+    pluginitem.L.SetFunctionHook('GetLevelFromExp', 'LuaGetLevelFromExp', Form1);
+    
+    pluginitem.L.LoadScript(LuaSearch.Name);
 
     // Check for global function
-    lua_getglobal(l.LuaContext, 'gzreplayRegister');
-    if lua_isfunction(l.LuaContext, -1) then
+    lua_getglobal(pluginitem.l.LuaContext, 'gzreplayRegister');
+    if lua_isfunction(pluginitem.l.LuaContext, -1) then
     begin
       // It exists, so call it!
-      lua_call(l.LuaContext, 0, 1);
+      lua_call(pluginitem.l.LuaContext, 0, 1);
 
-      lua_pushnil( l.LuaContext );
-      lua_next( l.LuaContext, -1 );
+      lua_pushnil( pluginitem.l.LuaContext );
+      lua_next( pluginitem.l.LuaContext, -1 );
 
-      SetLength(PluginInfo,i+1);
-      PluginInfo[i].Name := luaL_checkstring( l.LuaContext, -1 );
-      PluginInfo[i].Info := luaL_checkstring( l.LuaContext, 0 );
+      pluginitem.Name := luaL_checkstring( pluginitem.l.LuaContext, -1 );
+      pluginitem.Info := luaL_checkstring( pluginitem.l.LuaContext, 0 );
 
       menu := TMenuItem.Create( MainMenu1 );
       menu.Caption := ExtractFileName(LuaSearch.Name);
       menu.OnClick := ShowPluginInfo;
       MainMenu1.Items[1].Items[2].Add(menu);
+
+      plugins.Add(pluginitem);
     end;
 
-    l.Free;
-
-    inc(i);
     LuaScriptRes := FindNext(LuaSearch);
   end;
-
-  Lua.CloseLibrary;  
 
 end;
 
@@ -544,6 +626,9 @@ begin
 end;
 
 procedure TForm1.ReplayLoadedCallback(Sender: TObject);
+var
+  i: integer;
+  rplugin : TReplayPlugin;
 begin
   // .. part 2! :
 
@@ -585,6 +670,22 @@ begin
     RichEdit1.Clear;
     ApplyGunZChatter( replayInfo.Replay.GetChatLog() );
 
+    // NEW: Notify scripts
+    if plugins <> nil then
+    begin
+      for i:=1 to plugins.Count do
+      begin
+        rplugin := plugins.Items[i-1];
+
+        // attempt to call a special function
+        lua_getglobal(rplugin.l.LuaContext, 'gzreplayNewFileLoaded');
+        if lua_isfunction(rplugin.l.LuaContext, -1) then
+        begin
+          lua_call(rplugin.l.LuaContext, 0, 0);
+        end;
+      end;
+    end;
+
   end;
 
   // Finally free the replay instance
@@ -622,6 +723,20 @@ begin
     // Disable the update timer
     Timer1.Enabled        := False;
   end;
+end;
+
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+  if Lua.IsLibraryOpened() then
+    Lua.CloseLibrary;
+
+  if plugins <> nil then
+  begin
+    plugins.Clear;
+    plugins.Free;
+    plugins := nil;
+  end;
+
 end;
 
 end.

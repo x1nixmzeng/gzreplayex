@@ -10,7 +10,8 @@ uses
   LuaContextBase in 'LuaContextBase.pas',
   gzrecFrmAbout in 'gzrecFrmAbout.pas' {Form2},
   gzrecFrmProg in 'gzrecFrmProg.pas' {Form3},
-  gzrecReader in 'gzrecReader.pas';
+  gzrecReader in 'gzrecReader.pas',
+  gzexperience in 'gzexperience.pas';
 
 {$R *.res}
 

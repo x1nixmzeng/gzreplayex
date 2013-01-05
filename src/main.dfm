@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 296
-  Top = 169
+  Left = 372
+  Top = 284
   Width = 578
   Height = 400
   HorzScrollBar.Visible = False
@@ -15,6 +15,7 @@ object Form1: TForm1
   Menu = MainMenu1
   OldCreateOrder = False
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   DesignSize = (
     570
     354)
@@ -37,6 +38,7 @@ object Form1: TForm1
       'Settings'
       'Characters'
       'Statistics'
+      'More Statistics'
       'Chat Logs')
     ParentFont = False
     TabOrder = 0
@@ -287,9 +289,9 @@ object Form1: TForm1
       object Label4: TLabel
         Left = 8
         Top = 48
-        Width = 100
+        Width = 98
         Height = 13
-        Caption = 'Basic Information'
+        Caption = 'Base Information'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -299,7 +301,7 @@ object Form1: TForm1
       end
       object Label32: TLabel
         Left = 16
-        Top = 168
+        Top = 152
         Width = 25
         Height = 13
         Caption = 'Level'
@@ -314,13 +316,13 @@ object Form1: TForm1
       object Label34: TLabel
         Left = 16
         Top = 88
-        Width = 22
+        Width = 48
         Height = 13
-        Caption = 'User'
+        Caption = 'Character'
       end
       object Label35: TLabel
-        Left = 80
-        Top = 88
+        Left = 96
+        Top = 104
         Width = 64
         Height = 13
         Caption = 'Administrator'
@@ -328,20 +330,20 @@ object Form1: TForm1
       object Label36: TLabel
         Left = 16
         Top = 104
-        Width = 37
+        Width = 54
         Height = 13
-        Caption = 'Label36'
+        Caption = 'User Grade'
       end
       object Label59: TLabel
         Left = 16
-        Top = 216
-        Width = 30
+        Top = 296
+        Width = 121
         Height = 13
-        Caption = 'Speed'
+        Caption = 'Favorite Weapon ?'
       end
       object Label60: TLabel
         Left = 8
-        Top = 144
+        Top = 128
         Width = 85
         Height = 13
         Caption = 'Session Details'
@@ -354,38 +356,129 @@ object Form1: TForm1
       end
       object Label61: TLabel
         Left = 16
-        Top = 200
+        Top = 168
         Width = 21
         Height = 13
         Caption = 'Clan'
       end
-      object Label62: TLabel
-        Left = 80
-        Top = 72
-        Width = 37
-        Height = 13
-        Caption = 'Label62'
-      end
       object Label63: TLabel
-        Left = 88
-        Top = 216
+        Left = 96
+        Top = 312
         Width = 167
         Height = 13
         Caption = '1.3 units/ps (distance on XY plane)'
       end
       object Label64: TLabel
         Left = 16
-        Top = 232
-        Width = 37
+        Top = 200
+        Width = 53
         Height = 13
-        Caption = 'Label64'
+        Caption = 'Experience'
+      end
+      object Label80: TLabel
+        Left = 16
+        Top = 248
+        Width = 40
+        Height = 13
+        Caption = 'Playtime'
+      end
+      object Label81: TLabel
+        Left = 16
+        Top = 264
+        Width = 17
+        Height = 13
+        Caption = 'Kills'
       end
       object Label65: TLabel
         Left = 16
-        Top = 184
-        Width = 31
+        Top = 216
+        Width = 27
         Height = 13
-        Caption = 'Joined'
+        Caption = 'Items'
+      end
+      object Label82: TLabel
+        Left = 16
+        Top = 232
+        Width = 29
+        Height = 13
+        Caption = 'Visible'
+      end
+      object Label83: TLabel
+        Left = 16
+        Top = 184
+        Width = 53
+        Height = 13
+        Caption = 'Clan Grade'
+      end
+      object Label84: TLabel
+        Left = 16
+        Top = 280
+        Width = 34
+        Height = 13
+        Caption = 'Deaths'
+      end
+      object Label62: TLabel
+        Left = 96
+        Top = 88
+        Width = 84
+        Height = 13
+        Caption = 'Axium Gun Knight'
+      end
+      object Label85: TLabel
+        Left = 96
+        Top = 216
+        Width = 56
+        Height = 13
+        Caption = '0 / 12 items'
+      end
+      object Label86: TLabel
+        Left = 96
+        Top = 264
+        Width = 142
+        Height = 13
+        Caption = 'total, per minute, per round ?'
+      end
+      object Label87: TLabel
+        Left = 96
+        Top = 280
+        Width = 16
+        Height = 13
+        Caption = '^^'
+      end
+      object Label88: TLabel
+        Left = 96
+        Top = 248
+        Width = 40
+        Height = 13
+        Caption = '46m 30s'
+      end
+      object Label89: TLabel
+        Left = 240
+        Top = 152
+        Width = 100
+        Height = 13
+        Caption = 'Average Playtime HP'
+      end
+      object Label90: TLabel
+        Left = 240
+        Top = 176
+        Width = 87
+        Height = 13
+        Caption = 'Experience per Kill'
+      end
+      object Label91: TLabel
+        Left = 16
+        Top = 312
+        Width = 30
+        Height = 13
+        Caption = 'Speed'
+      end
+      object Label92: TLabel
+        Left = 208
+        Top = 120
+        Width = 164
+        Height = 13
+        Caption = 'Next level at (experience amount)'
       end
       object ComboBox1: TComboBox
         Left = 72
@@ -404,9 +497,9 @@ object Form1: TForm1
       object Label5: TLabel
         Left = 8
         Top = 8
-        Width = 40
+        Width = 78
         Height = 13
-        Caption = 'Deaths'
+        Caption = 'Totals Deaths'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -510,7 +603,7 @@ object Form1: TForm1
         Caption = 'Taunts'
       end
       object Label50: TLabel
-        Left = 88
+        Left = 104
         Top = 240
         Width = 18
         Height = 13
@@ -568,9 +661,129 @@ object Form1: TForm1
       object Label58: TLabel
         Left = 24
         Top = 256
-        Width = 101
+        Width = 50
         Height = 13
-        Caption = 'Popular taunt: Laugh'
+        Caption = 'Most Used'
+      end
+      object Label79: TLabel
+        Left = 104
+        Top = 256
+        Width = 37
+        Height = 13
+        Caption = 'Label79'
+      end
+    end
+    object TabSheet6: TTabSheet
+      Caption = 'TabSheet6'
+      ImageIndex = 5
+      TabVisible = False
+      object Label7: TLabel
+        Left = 8
+        Top = 8
+        Width = 40
+        Height = 13
+        Caption = 'Deaths'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label68: TLabel
+        Left = 16
+        Top = 32
+        Width = 26
+        Height = 13
+        Caption = 'Least'
+      end
+      object Label69: TLabel
+        Left = 16
+        Top = 104
+        Width = 26
+        Height = 13
+        Caption = 'Least'
+      end
+      object Label70: TLabel
+        Left = 8
+        Top = 144
+        Width = 46
+        Height = 13
+        Caption = 'Suicides'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label71: TLabel
+        Left = 16
+        Top = 48
+        Width = 23
+        Height = 13
+        Caption = 'Most'
+      end
+      object Label72: TLabel
+        Left = 8
+        Top = 80
+        Width = 22
+        Height = 13
+        Caption = 'Kills'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label73: TLabel
+        Left = 16
+        Top = 120
+        Width = 23
+        Height = 13
+        Caption = 'Most'
+      end
+      object Label74: TLabel
+        Left = 16
+        Top = 168
+        Width = 26
+        Height = 13
+        Caption = 'Least'
+      end
+      object Label75: TLabel
+        Left = 16
+        Top = 184
+        Width = 23
+        Height = 13
+        Caption = 'Most'
+      end
+      object Label76: TLabel
+        Left = 8
+        Top = 208
+        Width = 68
+        Height = 13
+        Caption = 'Frequencies'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label77: TLabel
+        Left = 16
+        Top = 232
+        Width = 90
+        Height = 13
+        Caption = 'Most used weapon'
+      end
+      object Label78: TLabel
+        Left = 16
+        Top = 248
+        Width = 37
+        Height = 13
+        Caption = 'Label78'
       end
     end
     object tsChatLogs: TTabSheet
@@ -622,24 +835,6 @@ object Form1: TForm1
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 0
-      end
-    end
-    object TabSheet6: TTabSheet
-      Caption = 'TabSheet6'
-      ImageIndex = 5
-      TabVisible = False
-      object Label7: TLabel
-        Left = 8
-        Top = 8
-        Width = 44
-        Height = 13
-        Caption = 'General'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = [fsBold]
-        ParentFont = False
       end
     end
     object TabSheet7: TTabSheet

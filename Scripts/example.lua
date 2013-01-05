@@ -11,11 +11,9 @@ function gzreplayRegister()
 	return
 	{
 		-- Plugin name
-		'Demo',
+		'Example',
 		-- Plugin description
-		'Example Lua script for gzreplayex!\ntest'
+		'This message was sent from the example Lua script'
 	}
 
 end
-
-HelloWorld('test')

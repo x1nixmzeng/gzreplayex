@@ -11,9 +11,22 @@ function gzreplayRegister()
 	return
 	{
 		-- Plugin name
-		'Demo 2',
+		'Example 2',
 		-- Plugin description
-		'This is the second script\n\nWritten by x1nixmzeng'
+		'This script has a callback when a replay is loaded.\n' ..
+		'It also calls a function hook:\n\n' ..
+		'With EXP 684604 you are level ' .. GetLevelFromExp( 684604 ) .. '!'
 	}
+
+end
+
+-- Callback expects no return value
+function gzreplayNewFileLoaded()
+
+	lvl1 = GetLevelFromExp( 1 )
+	lvl2 = GetLevelFromExp( 202 )
+	lvl3 = GetLevelFromExp( 1003 )
+	
+	-- Does nothing with this data for now..
 
 end
