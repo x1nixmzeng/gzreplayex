@@ -109,30 +109,24 @@ type
     About1: TMenuItem;
     SetHooks1: TMenuItem;
     OpenDialog2: TOpenDialog;
-    Open1: TMenuItem;
-    Replay1: TMenuItem;
-    GunZ2Commands1: TMenuItem;
     N2: TMenuItem;
     Plugins1: TMenuItem;
-    Button1: TButton;
     Timer1: TTimer;
+    GunZReplay1: TMenuItem;
+    OpenGunZ2Replay1: TMenuItem;
+    N3: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure ListBox1Click(Sender: TObject);
     procedure About1Click(Sender: TObject);
     procedure SetHooks1Click(Sender: TObject);
-    procedure Replay1Click(Sender: TObject);
-    procedure GunZ2Commands1Click(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
+    procedure GunZReplay1Click(Sender: TObject);
   private
-    replayInfo : TReplayReaderInfo;
-    replayStarted : TDateTime;
-
-    replayFile : TMemoryStream;  
-    replayData : gzrClass;
-
-    replayThread : TReplayReader;
+    replayInfo    : TReplayReaderInfo; // info
+    replayStarted : TDateTime;         // to avoid reusing the time unit
+    replayFile    : TMemoryStream;     // global (shared between 2 functions)
+    replayThread  : TReplayReader;     // for threading
 
     procedure ReplayLoadedCallback(Sender: TObject); 
 
@@ -337,6 +331,7 @@ begin
   );
 end;
 
+{
 procedure TForm1.Replay1Click(Sender: TObject);
 var
   gzrData : TMemoryStream;
@@ -447,7 +442,7 @@ begin
   gzr.Free;
 
 end;
-
+   }
 function TForm1.ReloadPlugins: Integer;
 var
   i,  // result index
@@ -519,48 +514,82 @@ begin
   Form1.Close;
 end;
 
-procedure TForm1.Button1Click(Sender: TObject);
+procedure TForm1.GunZReplay1Click(Sender: TObject);
 begin
 
+  // Assume the file has been closed
+  //   (ie thread isn't running or hasn't crashed)
   if replayFile <> nil then
     exit;
 
+  // Open dialog
   if not OpenDialog1.Execute then Exit;
 
-  // quickfix: check gunz2 replay type
-
+  // Create stream (file must exist)
   replayFile := TMemoryStream.Create;
   replayFile.LoadFromFile( OpenDialog1.Files[0] );
 
+  // Save start time
   replayStarted := Time;
 
+  // Create the thead
   replayThread := TReplayReader.Create( replayFile, replayInfo );
   replayThread.OnTerminate := ReplayLoadedCallback;
 
-  // setup ui
+  // Setup progress dialog
   Timer1.Enabled := True;
-
   Form3.Open;
 
-  // .. end of part 1!
-
+  // .. end of part 1! 
 end;
 
 procedure TForm1.ReplayLoadedCallback(Sender: TObject);
 begin
+  // .. part 2! :
 
-  // .. part 2!
-
-  // Free the replayFile data (should be part of replayInfo)
+  // Free the replayFile data
   replayFile.Free;
   replayFile := nil;
 
   // We can now update the UI now
 
-  // TODO: Where is the UI class?
+  if replayInfo.ReadResult = GZR_SUCCESS then
+  begin
+    // TODO: UI RESET
 
+    // THEN
+    Label19.Caption := ExtractFileName( OpenDialog1.Files[0] );
 
+    label18.Caption := IntToStr( replayInfo.Size );
+    Label1.Caption := replayInfo.Replay.GetVersionStr();
 
+    Label16.Caption := Format('%.2f',[replayInfo.Replay.GetRunningTime()]);
+    Label17.Caption := replayInfo.Replay.GetOwnerChar();
+
+    Label20.Caption := inttostr(replayInfo.Replay.GetTotalPackets());
+
+    {
+    tmp := replayInfo.Replay.GetTotalPlayers();
+
+    combobox1.Clear();
+    for i := 1 to tmp do
+    begin
+      combobox1.Items.Add(replayInfo.Replay.getchar(i-1));
+    end;
+
+    }
+    // Stage
+    Label22.Caption := replayInfo.Replay.GetMapName();
+
+    // Chat Log
+    RichEdit1.Clear;
+    ApplyGunZChatter( replayInfo.Replay.GetChatLog() );
+
+  end;
+
+  // Finally free the replay instance
+  replayInfo.Replay.Free;
+  replayInfo.Replay := nil;  
 
 end;
 
@@ -586,7 +615,8 @@ begin
     Form3.Button1.Enabled := True;
 
     // Automatically close if there is no error
-    if replayInfo.ErrorMsg = '' then
+    // UPDATE: Added local session checkbox
+    if ( replayInfo.ErrorMsg = '' ) and ( Form3.CheckBox1.Checked ) then
       Form3.Close;
 
     // Disable the update timer

@@ -6,11 +6,12 @@ uses SysUtils, classes, ZLIBSTREAM, gzreplay, gzrecFrmProg;
 
 type
   TReplayReaderInfo = record
-  // could also hold the TMemoryStreams?
     Status   : String;
     ErrorMsg : String;
     Progress,
     Size     : integer;
+    Replay   : gzrClass;
+    ReadResult : gzreplaystate;
   end;
 
   TReplayReader = class(TThread)
@@ -18,7 +19,6 @@ type
     gzFilePos,
     gzFilesize : integer;
 
-    gzr : gzrClass; // todo: also make a pointer
     gzrStream : ^TMemoryStream;
     gzrInfo   : ^TReplayReaderInfo;
 
@@ -50,7 +50,6 @@ destructor TReplayReader.Destroy;
 begin
   gzrInfo.Status   := 'Finished';
   gzrInfo.Progress := 100;
-  gzr.Free;
   gzrStream := nil;
   inherited;
 end;
@@ -85,14 +84,13 @@ begin
   gzrInfo.Progress := 50;
   gzrInfo.Size     := gzrStream.Size;
   gzrInfo.Status   := 'Processing..';
+  gzrInfo.Replay   := gzrClass.Create;
+  gzrInfo.ReadResult := gzrInfo.Replay.LoadReplay( gzrStream^ );
 
-  gzr := gzrClass.Create;
-  loadResult:= gzr.LoadReplay( gzrStream^ );
-
-  // TODO: Expand on the error message here
-
-  if loadResult <> GZR_SUCCESS then
+  if gzrInfo.ReadResult <> GZR_SUCCESS then
   begin
+    // TODO: Expand on the error messages from the read result
+    //  .. but keep the case statement here
     gzrInfo.ErrorMsg := 'Could not parse this replay file';
   end;
 

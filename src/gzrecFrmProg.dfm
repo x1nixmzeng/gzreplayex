@@ -1,6 +1,6 @@
 object Form3: TForm3
-  Left = 107
-  Top = 616
+  Left = 448
+  Top = 328
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
   BorderIcons = [biSystemMenu, biMinimize]
@@ -107,5 +107,13 @@ object Form3: TForm3
     Default = True
     TabOrder = 1
     OnClick = Button1Click
+  end
+  object CheckBox1: TCheckBox
+    Left = 8
+    Top = 148
+    Width = 217
+    Height = 17
+    Caption = 'Always close when loaded successfully'
+    TabOrder = 2
   end
 end

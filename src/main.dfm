@@ -5,7 +5,7 @@ object Form1: TForm1
   Height = 400
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
-  Caption = 'gzreplayex (working title)'
+  Caption = 'GunZ Replay Ex(plorer|aminer)'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -661,15 +661,6 @@ object Form1: TForm1
       end
     end
   end
-  object Button1: TButton
-    Left = 48
-    Top = 304
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 2
-    OnClick = Button1Click
-  end
   object XPManifest1: TXPManifest
     Left = 728
   end
@@ -678,16 +669,15 @@ object Form1: TForm1
     Top = 8
     object File1: TMenuItem
       Caption = '&File'
-      object Open1: TMenuItem
-        Caption = '&Open'
-        object Replay1: TMenuItem
-          Caption = '&Replay..'
-          OnClick = Replay1Click
-        end
-        object GunZ2Commands1: TMenuItem
-          Caption = 'R&eplay (GunZ2)..'
-          OnClick = GunZ2Commands1Click
-        end
+      object GunZReplay1: TMenuItem
+        Caption = '&Open GunZ Replay..'
+        OnClick = GunZReplay1Click
+      end
+      object OpenGunZ2Replay1: TMenuItem
+        Caption = 'O&pen GunZ 2 Replay..'
+      end
+      object N3: TMenuItem
+        Caption = '-'
       end
       object SetHooks1: TMenuItem
         Caption = '&Reload Scripts'

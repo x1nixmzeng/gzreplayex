@@ -17,6 +17,7 @@ type
     Label5: TLabel;
     Button1: TButton;
     Label8: TLabel;
+    CheckBox1: TCheckBox;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Button1Click(Sender: TObject);
   private
