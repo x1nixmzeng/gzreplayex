@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 283
-  Top = 167
+  Left = 296
+  Top = 169
   Width = 578
   Height = 400
   HorzScrollBar.Visible = False
@@ -662,22 +662,13 @@ object Form1: TForm1
     end
   end
   object Button1: TButton
-    Left = 96
-    Top = 328
+    Left = 48
+    Top = 304
     Width = 75
     Height = 25
     Caption = 'Button1'
     TabOrder = 2
     OnClick = Button1Click
-  end
-  object Button2: TButton
-    Left = 64
-    Top = 280
-    Width = 75
-    Height = 25
-    Caption = 'Button2'
-    TabOrder = 3
-    OnClick = Button2Click
   end
   object XPManifest1: TXPManifest
     Left = 728
@@ -746,7 +737,7 @@ object Form1: TForm1
     Enabled = False
     Interval = 5
     OnTimer = Timer1Timer
-    Left = 300
-    Top = 302
+    Left = 340
+    Top = 70
   end
 end

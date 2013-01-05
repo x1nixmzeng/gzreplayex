@@ -9,8 +9,8 @@ type
   // could also hold the TMemoryStreams?
     Status   : String;
     ErrorMsg : String;
-    Size,
-    Time   : integer;
+    Progress,
+    Size     : integer;
   end;
 
   TReplayReader = class(TThread)
@@ -41,15 +41,15 @@ begin
 
   gzrInfo.ErrorMsg := '';
   gzrInfo.Status   := 'Waiting..';
-//  gzrInfo.Pos      := 0;
+  gzrInfo.Progress := 0;
   gzrInfo.Size     := 0;
-  gzrInfo.Time     := 0;
 
 end;
 
 destructor TReplayReader.Destroy;
 begin
   gzrInfo.Status   := 'Finished';
+  gzrInfo.Progress := 100;
   gzr.Free;
   gzrStream := nil;
   inherited;
@@ -71,24 +71,33 @@ begin
 
   if tmp <> gzreplay.GZR_MAGIC then
   begin
+    gzrInfo.Progress := 10;
     gzrInfo.Status   := 'Decompressing..';
 
     if not DecompressZlib( gzrStream^ ) then
     begin
-      gzrInfo.ErrorMsg := 'Failed to decompress file!';
+      gzrInfo.Progress := 100;
+      gzrInfo.ErrorMsg := 'Could not decompress this replay file';
       Exit;
     end;
   end;
 
+  gzrInfo.Progress := 50;
   gzrInfo.Size     := gzrStream.Size;
   gzrInfo.Status   := 'Processing..';
 
   gzr := gzrClass.Create;
   loadResult:= gzr.LoadReplay( gzrStream^ );
+
+  // TODO: Expand on the error message here
+
   if loadResult <> GZR_SUCCESS then
   begin
-    gzrInfo.ErrorMsg := 'Failed to read replay';
+    gzrInfo.ErrorMsg := 'Could not parse this replay file';
   end;
+
+  gzrInfo.Progress := 100;
+  Sleep(100);
 
 end;
 

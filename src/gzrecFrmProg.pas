@@ -15,9 +15,8 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
     Button1: TButton;
+    Label8: TLabel;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Button1Click(Sender: TObject);
   private
@@ -39,7 +38,10 @@ begin
 
   // Reset UI
   ProgressBar1.Position := 0;
-
+  Label1.Caption        := '';
+  Label8.Caption        := '';
+  Label3.Caption        := '--';
+  Label5.Caption        := '--';
   Button1.Enabled       := False;  // disable close button
   ShowModal;
 end;

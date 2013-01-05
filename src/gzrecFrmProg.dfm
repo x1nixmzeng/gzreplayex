@@ -1,12 +1,12 @@
 object Form3: TForm3
-  Left = 394
-  Top = 308
+  Left = 107
+  Top = 616
   HorzScrollBar.Visible = False
   VertScrollBar.Visible = False
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsToolWindow
   Caption = 'Processing Replay File'
-  ClientHeight = 177
+  ClientHeight = 175
   ClientWidth = 322
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -32,15 +32,14 @@ object Form3: TForm3
       Width = 273
       Height = 13
       AutoSize = False
-      Caption = 'Decompressing replay..'
     end
     object Label2: TLabel
       Left = 52
-      Top = 72
-      Width = 29
+      Top = 80
+      Width = 53
       Height = 13
       Alignment = taRightJustify
-      Caption = 'Read'
+      Caption = 'Data Size'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -49,19 +48,19 @@ object Form3: TForm3
       ParentFont = False
     end
     object Label3: TLabel
-      Left = 96
-      Top = 72
+      Left = 120
+      Top = 80
       Width = 8
       Height = 13
       Caption = '--'
     end
     object Label4: TLabel
-      Left = 21
-      Top = 88
-      Width = 60
+      Left = 13
+      Top = 96
+      Width = 92
       Height = 13
       Alignment = taRightJustify
-      Caption = 'Remaining'
+      Caption = 'Processing Time'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -70,32 +69,24 @@ object Form3: TForm3
       ParentFont = False
     end
     object Label5: TLabel
-      Left = 96
-      Top = 88
+      Left = 120
+      Top = 96
       Width = 8
       Height = 13
       Caption = '--'
     end
-    object Label6: TLabel
-      Left = 21
-      Top = 104
-      Width = 60
+    object Label8: TLabel
+      Left = 16
+      Top = 64
+      Width = 273
       Height = 13
-      Alignment = taRightJustify
-      Caption = 'Total Time'
+      AutoSize = False
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
+      Font.Color = clMaroon
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
-    end
-    object Label7: TLabel
-      Left = 96
-      Top = 104
-      Width = 8
-      Height = 13
-      Caption = '--'
     end
     object ProgressBar1: TProgressBar
       Left = 16

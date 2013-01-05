@@ -116,7 +116,6 @@ type
     Plugins1: TMenuItem;
     Button1: TButton;
     Timer1: TTimer;
-    Button2: TButton;
     procedure FormCreate(Sender: TObject);
     procedure ListBox1Click(Sender: TObject);
     procedure About1Click(Sender: TObject);
@@ -126,9 +125,9 @@ type
     procedure Exit1Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
   private
     replayInfo : TReplayReaderInfo;
+    replayStarted : TDateTime;
 
     replayFile : TMemoryStream;  
     replayData : gzrClass;
@@ -533,54 +532,66 @@ begin
   replayFile := TMemoryStream.Create;
   replayFile.LoadFromFile( OpenDialog1.Files[0] );
 
+  replayStarted := Time;
+
   replayThread := TReplayReader.Create( replayFile, replayInfo );
   replayThread.OnTerminate := ReplayLoadedCallback;
 
   // setup ui
   Timer1.Enabled := True;
 
-  Form3.Open;  
+  Form3.Open;
 
-  // wait for thread    
+  // .. end of part 1!
 
 end;
 
 procedure TForm1.ReplayLoadedCallback(Sender: TObject);
 begin
 
-  // set timer update to 1
-  // then update stuff?
+  // .. part 2!
 
+  // Free the replayFile data (should be part of replayInfo)
   replayFile.Free;
   replayFile := nil;
+
+  // We can now update the UI now
+
+  // TODO: Where is the UI class?
+
+
+
 
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
 
-  if replayFile <> nil then
-  begin
-    Form3.Label1.Caption := replayInfo.Status;
-    Form3.Label3.Caption := Format('%d b', [replayFile.Position]);
-    Form3.Label5.Caption := Format('%d b', [replayInfo.Size]);
+  Form3.Label1.Caption := replayInfo.Status;
 
-    Form3.ProgressBar1.Max      := replayInfo.Size;
-    Form3.ProgressBar1.Position := replayFile.Position;
+  if replayInfo.ErrorMsg <> '' then
+    Form3.Label8.Caption := 'Error: ' + replayInfo.ErrorMsg;
 
-  end
-  else
+  // Temporary
+  Form3.Label3.Caption := Format('%d b', [replayInfo.Size]);
+  
+  Form3.Label5.Caption := TimeToStr( Time - replayStarted );
+
+  Form3.ProgressBar1.Position := replayInfo.Progress;
+
+  if replayFile = nil then
   begin
-   // enable the close button (unless error occured?)
-    Form3.allowClose := True;
+    // Allow the progress bar to close
+    Form3.allowClose      := True;
     Form3.Button1.Enabled := True;
-    Timer1.Enabled := False;
-  end;
-end;
 
-procedure TForm1.Button2Click(Sender: TObject);
-begin
-  Form3.ShowModal;
+    // Automatically close if there is no error
+    if replayInfo.ErrorMsg = '' then
+      Form3.Close;
+
+    // Disable the update timer
+    Timer1.Enabled        := False;
+  end;
 end;
 
 end.
