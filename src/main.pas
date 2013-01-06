@@ -1,5 +1,11 @@
 (*
 
+http://forum.ragezone.com/f245/custom-chat-colours-883015/
+                                                          
+would be better to hold a large array for char?
+faster lookup and quicker to modify/add/delete
+
+
 
 <STR id="UI_CC_LIST_03_01">Axium Gun Knight</STR>
 <STR id="UI_CC_LIST_03_02">Travia Gun Fighter</STR>
@@ -31,7 +37,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, XPMan, StdCtrls, ZLIBSTREAM, gzreplay, Menus, ComCtrls, Lua, LuaLib,
-  LuaContextBase, gzrecFrmAbout, gzrecReader, ExtCtrls, gzexperience ;
+  LuaContextBase, gzrecFrmAbout, gzrecReader, ExtCtrls, gzexperience,
+  CheckLst ;
 
 type
   TReplayPlugin = class
@@ -39,6 +46,12 @@ type
     Name,
     Info  : String;
     L : TLua; // lua context
+  end;
+
+  TChatColour = class
+  public
+    Tag : Char;
+    Colour : TColor;
   end;
 
   PTReplayPlugin = ^TReplayPlugin;
@@ -119,8 +132,6 @@ type
     Label64: TLabel;
     OpenDialog1: TOpenDialog;
     RichEdit1: TRichEdit;
-    Label66: TLabel;
-    Label67: TLabel;
     Help1: TMenuItem;
     About1: TMenuItem;
     OpenDialog2: TOpenDialog;
@@ -164,6 +175,27 @@ type
     Reload1: TMenuItem;
     N4: TMenuItem;
     About2: TMenuItem;
+    Label94: TLabel;
+    Label95: TLabel;
+    Label96: TLabel;
+    Label97: TLabel;
+    Label98: TLabel;
+    Label99: TLabel;
+    Label100: TLabel;
+    Label101: TLabel;
+    Label102: TLabel;
+    Label103: TLabel;
+    Label104: TLabel;
+    Label105: TLabel;
+    Button1: TButton;
+    Label106: TLabel;
+    Label66: TLabel;
+    ListBox4: TListBox;
+    CheckListBox1: TCheckListBox;
+    Button2: TButton;
+    Button3: TButton;
+    Button4: TButton;
+    CheckBox1: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure ListBox1Click(Sender: TObject);
     procedure About1Click(Sender: TObject);
@@ -171,18 +203,31 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure GunZReplay1Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure Plugins1Click(Sender: TObject);
     procedure Reload1Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure ListView1CustomDrawItem(Sender: TCustomListView;
+      Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
+    procedure ListBox4DrawItem(Control: TWinControl; Index: Integer;
+      Rect: TRect; State: TOwnerDrawState);
+    procedure Button7Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure ListBox4Click(Sender: TObject);
   private
     replayInfo    : TReplayReaderInfo; // info
     replayStarted : TDateTime;         // to avoid reusing the time unit
     replayFile    : TMemoryStream;     // global (shared between 2 functions)
     replayThread  : TReplayReader;     // for threading
+    
+    ChatColours : TList;
+    procedure ResetChatColours;
+    function AddChatColour(tag:char;col:TColor):Boolean;
 
     procedure ReplayLoadedCallback(Sender: TObject); 
 
     procedure ApplyGunZChatter(ChatLog: String);
-    procedure AddString(str:string;col:char);
+    procedure AddGunZChatMessage(Log:TRichEdit;Str:String;cFlag:char);
 
     function ReloadPlugins() : integer;
 
@@ -196,7 +241,8 @@ type
   published
     function HelloWorld(LuaState: TLuaState): Integer;
     function LuaExpToNextLevel(LuaState: TLuaState): Integer;
-    function LuaGetLevelFromExp(LuaState: TLuaState): Integer;        
+    function LuaGetLevelFromExp(LuaState: TLuaState): Integer;
+    function LuaAddChatColor(LuaState: TLuaState): Integer;        
   end;
 
 var
@@ -211,6 +257,10 @@ uses gzrecFrmProg;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   ListBox1.ItemIndex := 0;
+
+  ChatColours := TList.Create;
+  ResetChatColours;
+
   ResetUI;
 end;
 
@@ -233,25 +283,28 @@ begin
   PageControl1.Pages[ ListBox1.ItemIndex ].Show; 
 end;
 
-procedure TForm1.AddString(str:string;col:char);
+{
+  AddGunZString()
+    Adds a GunZ chat message to a TRichEdit instance
+}
+procedure TForm1.AddGunZChatMessage(Log:TRichEdit;Str:String;cFlag:char);
+var
+  StrColour : TColor;
+  i: integer;
 begin
-  case col of
-    '0' : RichEdit1.SelAttributes.Color := $808080; // Grey
-    '1' : RichEdit1.SelAttributes.Color := $0000FF; // Red
-    '2' : RichEdit1.SelAttributes.Color := $00FF00; // Green
-    '3' : RichEdit1.SelAttributes.Color := $FF0000; // Blue
-    '4' : RichEdit1.SelAttributes.Color := $00FFFF; // Yellow
-    '5' : RichEdit1.SelAttributes.Color := $000080; // Dark red
-    '6' : RichEdit1.SelAttributes.Color := $008000; // Dark green
-    '7' : RichEdit1.SelAttributes.Color := $800000; // Dark blue
-    '8' : RichEdit1.SelAttributes.Color := $008080; // Dark yellow
-    '9' : RichEdit1.SelAttributes.Color := $FFFFFF; // White
-  else
-    RichEdit1.SelAttributes.Color := clBlack;
-  end;
+
+  StrColour := clBlack;
+
+  for i:=1 to ChatColours.Count do
+    if cFlag = TChatColour(ChatColours.Items[i-1]).Tag then
+    begin
+      StrColour := TChatColour(ChatColours.Items[i-1]).Colour;
+      break;
+    end;
 
   // Add the text
-  RichEdit1.SelText := str;
+  Log.SelAttributes.Color := StrColour;
+  Log.SelText             := Str;
 end;
 
 procedure TForm1.ApplyGunZChatter( ChatLog: String );
@@ -259,8 +312,17 @@ var
   i,l: integer;
   s: string;
   col:char;
+  function hasTag(tag:char) :boolean;
+  var i:integer;
+  begin
+    result:=true;
+    for i:=1 to ChatColours.Count do
+      if tag = TChatColour(ChatColours.Items[i-1]).Tag then
+        exit;
+    result:=false;
+  end;
 const
-  DEFAULT_COLOUR : char = 'x';
+  DEFAULT_COLOUR : char = #0;
 begin
 
   col := DEFAULT_COLOUR; // begin with default colour
@@ -274,12 +336,13 @@ begin
     // if current char is '^'
     //  AND there is at least one more character in the string
     //  AND that character is a colour indicator 
-    if (ChatLog[i] = '^') and (i<l) and (ChatLog[i+1] in ['0'..'9']) then
+    if (ChatLog[i] = '^') and (i<l) and (hasTag(ChatLog[i+1])) then
     begin
-      AddString( s, col );         // Add the last string colour
+      AddGunZChatMessage( RichEdit1, s, col );
+                              // Add the last string colour
       col := ChatLog[i+1];    // Get the new colour code
       s :='';                 // Empty the last colour string buffer
-      inc(i);                 // Ignore the colour code (0-9)
+      inc(i);                 // Ignore the colour code
     end
     // for anything else
     else
@@ -290,7 +353,8 @@ begin
       if ChatLog[i] = #10 then
       begin
         if length(s) > 0 then
-          AddString( s, col );     // Add the last string colour
+          AddGunZChatMessage( RichEdit1, s, col );
+                              // Add the last string colour
           
         s := '';              // Empty the last colour string buffer
         col := DEFAULT_COLOUR;// Reset the default colour
@@ -302,7 +366,8 @@ begin
 
   // Finally insert the trailing data
   if length(s) > 0 then
-    AddString(s,col);              // Add the remaining string
+    AddGunZChatMessage(RichEdit1,s,col);
+                             // Add the remaining string
 
 end;
 
@@ -359,6 +424,7 @@ begin
     gzrData.Seek($130, soCurrent); // 304
 
     // Seen $140 / 320
+    // Seen $218 / 536 (GunZ 2 CBT - 2013)
   end;
 
 
@@ -403,8 +469,23 @@ begin
 
   CalculateExpTable;
   lua_pushinteger(luastate, GetLevelFromExp( exp ));
-  
+
   Result := 1;
+end;
+
+function TForm1.LuaAddChatColor(LuaState: TLuaState): Integer;
+var
+  tag: string;
+  col: integer;
+begin
+
+  tag := luaL_checkstring(LuaState, -2);
+  col := luaL_checkinteger(LuaState, -1);
+
+  if length(tag) = 1 then
+    AddChatColour(tag[1], col);
+
+  Result := 0;
 end;
 
 
@@ -583,6 +664,7 @@ begin
 
     pluginitem.L.SetFunctionHook('ExpToNextLevel',  'LuaExpToNextLevel',  Form1);
     pluginitem.L.SetFunctionHook('GetLevelFromExp', 'LuaGetLevelFromExp', Form1);
+    pluginitem.L.SetFunctionHook('AddChatColor',    'LuaAddChatColor',    Form1);
 
     if pluginitem.L.LoadScript(LuaSearch.Name) <> 0 then
       ShowErrorPopup( luaL_checkstring(pluginitem.l.LuaContext, -1 ), 'Script Error' )
@@ -775,6 +857,9 @@ begin
     plugins := nil;
   end;
 
+  ListBox4.Clear;
+  ChatColours.Destroy;
+
 end;
 
 procedure TForm1.ResetUI;
@@ -805,17 +890,175 @@ begin
   
 end;
 
-procedure TForm1.Plugins1Click(Sender: TObject);
-begin
-  if TMenuItem(Sender).Count = 0 then
-  begin
-    ShowMessage('Plugin information');
-  end;
-end;
-
 procedure TForm1.Reload1Click(Sender: TObject);
 begin
   ReloadPlugins();
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+var
+  allText: String;
+  cursorat : integer;
+  i:integer;
+  c:char;
+begin
+  allText := RichEdit1.Lines.Text;
+  cursorat := RichEdit1.SelStart;
+  RichEdit1.Clear;
+
+  if checkbox1.Checked then
+  // replace all ^x with ^x^^xx - which keeps the ^x command intact
+  for i:=1 to ChatColours.Count do
+  begin
+    c := TChatColour(ChatColours.Items[i-1]).Tag;
+    allText := StringReplace(
+     allText,
+     '^'+c,
+     '^'+c+'^^'+c+c,
+      [rfReplaceAll,rfIgnoreCase]);
+  end;
+
+  ApplyGunZChatter( allText );
+
+  RichEdit1.SelStart := cursorat;
+end;
+
+procedure TForm1.ListView1CustomDrawItem(Sender: TCustomListView;
+  Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
+begin
+  if Item.Index = 0 then
+    Sender.Canvas.Brush.Color := clWhite
+  else
+    Sender.Canvas.Brush.Color := clWindow;
+end;
+
+procedure TForm1.ListBox4DrawItem(Control: TWinControl; Index: Integer;
+  Rect: TRect; State: TOwnerDrawState);
+var
+// based on http://delphi.about.com/cs/adptips2002/a/bltip0602_4.htm
+   myBrush: TBrush;
+   colArea  : TRect;
+begin
+  myBrush := TBrush.Create;
+  myBrush.Style := bsSolid;
+
+  with TListBox(Control) do
+  begin
+    Canvas.FillRect(Rect);
+
+    Windows.FillRect(canvas.Handle, rect, canvas.Brush.Handle);
+
+    // draw colour area
+    colArea := Rect;
+    inc(colArea.Top,2);
+    dec(colArea.Bottom,2);
+
+    inc(colArea.Left,2);
+    colArea.Right := colArea.Left + (rect.Bottom-rect.Top-2); // make square
+
+//    colArea.Left  := 2;
+//    colArea.Right := rect.Bottom - rect.Top - 2;
+
+    myBrush.Color := TChatColour(ChatColours[Index]).Colour;
+    Windows.FillRect(Canvas.Handle, colArea, myBrush.Handle) ;
+    Canvas.TextOut(colArea.Right+4, Rect.Top, Items[Index] );
+  end;
+  
+  MyBrush.Free;
+end;
+
+function TForm1.AddChatColour(tag:char;col:TColor):Boolean;
+  function IsTagUsed(tag:char): Boolean;
+  var i:integer;
+  begin
+    Result:=True;
+    for i:=1 to ChatColours.Count do
+      if TChatColour(ChatColours.Items[i-1]).tag = tag then
+        exit;
+    Result:=False;
+  end;
+var
+  ccol : TChatColour;
+begin
+  Result := False;
+  if not isTagUsed(tag) then
+  begin
+    ccol := TChatColour.Create;
+    ccol.Tag    := tag;
+    ccol.Colour := col;
+    ChatColours.Add( ccol );
+    ListBox4.Items.Add(tag);
+    Result := True;    
+  end;
+end;
+
+procedure TForm1.ResetChatColours;
+const
+  ColourValues : array['0'..'9'] of TColor =
+  (
+    $808080, // Grey
+    $0000FF, // Red
+    $00FF00, // Green
+    $FF0000, // Blue
+    $00FFFF, // Yellow
+    $000080, // Dark red
+    $008000, // Dark green
+    $800000, // Dark blue
+    $008080, // Dark yellow
+    $FFFFFF  // White
+  );
+var
+  c: char;
+  ccol : TChatColour;
+begin
+  ListBox4.Clear;
+  ChatColours.Clear;
+
+  for c:='0' to '9' do
+    AddChatColour(c, ColourValues[ c ]);
+end;
+
+procedure TForm1.Button7Click(Sender: TObject);
+var
+  ccol : TChatColour;
+begin
+
+  ccol := TChatColour.Create;
+  ccol.Tag    := '@';
+  ccol.Colour := $0088FF;
+  ChatColours.Add( ccol );
+  ListBox4.Items.Add(ccol.Tag);
+
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+var i : integer;
+begin
+  for i := 1 to CheckListBox1.Count do
+    CheckListBox1.Checked[i-1] := True;
+end;
+
+procedure TForm1.Button3Click(Sender: TObject);
+var i : integer;
+begin
+  for i := 1 to CheckListBox1.Count do
+    CheckListBox1.Checked[i-1] := False;
+end;
+
+procedure TForm1.Button4Click(Sender: TObject);
+begin
+  MessageBoxA
+  (
+    Handle,
+    'This can be done via Lua script!',
+    'Add Chat Colour',
+    MB_OK or MB_ICONINFORMATION
+  );
+end;
+
+procedure TForm1.ListBox4Click(Sender: TObject);
+begin
+  TListBox(Sender).ItemIndex := -1;
 end;
 
 end.

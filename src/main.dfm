@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 372
-  Top = 284
+  Left = 382
+  Top = 259
   Width = 578
   Height = 400
   HorzScrollBar.Visible = False
@@ -77,17 +77,17 @@ object Form1: TForm1
         ParentFont = False
       end
       object Label9: TLabel
-        Left = 16
+        Left = 39
         Top = 32
-        Width = 65
+        Width = 42
         Height = 13
         Alignment = taRightJustify
         Caption = 'Filename'
       end
       object Label10: TLabel
-        Left = 16
+        Left = 47
         Top = 48
-        Width = 65
+        Width = 34
         Height = 13
         Alignment = taRightJustify
         Caption = 'Filesize'
@@ -106,33 +106,33 @@ object Form1: TForm1
         ParentFont = False
       end
       object Label12: TLabel
-        Left = 16
+        Left = 46
         Top = 96
-        Width = 65
+        Width = 35
         Height = 13
         Alignment = taRightJustify
         Caption = 'Version'
       end
       object Label13: TLabel
-        Left = 16
+        Left = 17
         Top = 112
-        Width = 65
+        Width = 64
         Height = 13
         Alignment = taRightJustify
         Caption = 'Running Time'
       end
       object Label14: TLabel
-        Left = 16
+        Left = 49
         Top = 128
-        Width = 65
+        Width = 32
         Height = 13
         Alignment = taRightJustify
         Caption = 'Owner'
       end
       object Label15: TLabel
-        Left = 16
+        Left = 44
         Top = 144
-        Width = 65
+        Width = 37
         Height = 13
         Alignment = taRightJustify
         Caption = 'Packets'
@@ -173,9 +173,9 @@ object Form1: TForm1
         Caption = 'Label20'
       end
       object Label42: TLabel
-        Left = 16
+        Left = 46
         Top = 160
-        Width = 65
+        Width = 35
         Height = 13
         Alignment = taRightJustify
         Caption = 'Players'
@@ -213,7 +213,7 @@ object Form1: TForm1
         Caption = 'Map'
       end
       object Label22: TLabel
-        Left = 80
+        Left = 88
         Top = 32
         Width = 37
         Height = 13
@@ -275,7 +275,7 @@ object Form1: TForm1
         ParentFont = False
       end
       object Label30: TLabel
-        Left = 80
+        Left = 88
         Top = 160
         Width = 37
         Height = 13
@@ -287,6 +287,48 @@ object Form1: TForm1
         Width = 43
         Height = 13
         Caption = 'Late Join'
+      end
+      object Label94: TLabel
+        Left = 88
+        Top = 48
+        Width = 37
+        Height = 13
+        Caption = 'Label94'
+      end
+      object Label95: TLabel
+        Left = 88
+        Top = 64
+        Width = 37
+        Height = 13
+        Caption = 'Label95'
+      end
+      object Label96: TLabel
+        Left = 88
+        Top = 80
+        Width = 37
+        Height = 13
+        Caption = 'Label96'
+      end
+      object Label97: TLabel
+        Left = 88
+        Top = 96
+        Width = 37
+        Height = 13
+        Caption = 'Label97'
+      end
+      object Label98: TLabel
+        Left = 88
+        Top = 112
+        Width = 37
+        Height = 13
+        Caption = 'Label98'
+      end
+      object Label99: TLabel
+        Left = 88
+        Top = 176
+        Width = 37
+        Height = 13
+        Caption = 'Label99'
       end
     end
     object tsCharacters: TTabSheet
@@ -328,7 +370,7 @@ object Form1: TForm1
         Caption = 'Character'
       end
       object Label35: TLabel
-        Left = 96
+        Left = 88
         Top = 104
         Width = 64
         Height = 13
@@ -369,7 +411,7 @@ object Form1: TForm1
         Caption = 'Clan'
       end
       object Label63: TLabel
-        Left = 96
+        Left = 88
         Top = 280
         Width = 22
         Height = 13
@@ -425,35 +467,35 @@ object Form1: TForm1
         Caption = 'Deaths'
       end
       object Label62: TLabel
-        Left = 96
+        Left = 88
         Top = 88
         Width = 84
         Height = 13
         Caption = 'Axium Gun Knight'
       end
       object Label85: TLabel
-        Left = 96
+        Left = 88
         Top = 216
         Width = 56
         Height = 13
         Caption = '0 / 12 items'
       end
       object Label86: TLabel
-        Left = 96
+        Left = 88
         Top = 264
         Width = 142
         Height = 13
         Caption = 'total, per minute, per round ?'
       end
       object Label87: TLabel
-        Left = 96
+        Left = 88
         Top = 296
         Width = 16
         Height = 13
         Caption = '^^'
       end
       object Label88: TLabel
-        Left = 96
+        Left = 88
         Top = 248
         Width = 40
         Height = 13
@@ -468,7 +510,7 @@ object Form1: TForm1
       end
       object Label90: TLabel
         Left = 240
-        Top = 176
+        Top = 184
         Width = 87
         Height = 13
         Caption = 'Experience per Kill'
@@ -476,9 +518,9 @@ object Form1: TForm1
       object Label91: TLabel
         Left = 16
         Top = 280
-        Width = 59
+        Width = 34
         Height = 13
-        Caption = '..per minute'
+        Caption = 'Kills PM'
       end
       object Label92: TLabel
         Left = 208
@@ -486,6 +528,48 @@ object Form1: TForm1
         Width = 164
         Height = 13
         Caption = 'Next level at (experience amount)'
+      end
+      object Label100: TLabel
+        Left = 88
+        Top = 72
+        Width = 43
+        Height = 13
+        Caption = 'Label100'
+      end
+      object Label101: TLabel
+        Left = 88
+        Top = 168
+        Width = 43
+        Height = 13
+        Caption = 'Label101'
+      end
+      object Label102: TLabel
+        Left = 88
+        Top = 152
+        Width = 43
+        Height = 13
+        Caption = 'Label102'
+      end
+      object Label103: TLabel
+        Left = 88
+        Top = 200
+        Width = 43
+        Height = 13
+        Caption = 'Label103'
+      end
+      object Label104: TLabel
+        Left = 88
+        Top = 184
+        Width = 43
+        Height = 13
+        Caption = 'Label104'
+      end
+      object Label105: TLabel
+        Left = 88
+        Top = 232
+        Width = 43
+        Height = 13
+        Caption = 'Label105'
       end
       object ComboBox1: TComboBox
         Left = 72
@@ -761,14 +845,14 @@ object Form1: TForm1
         Caption = 'Most Used'
       end
       object Label79: TLabel
-        Left = 104
+        Left = 80
         Top = 48
         Width = 29
         Height = 13
         Caption = 'Laugh'
       end
       object Label50: TLabel
-        Left = 104
+        Left = 88
         Top = 32
         Width = 18
         Height = 13
@@ -788,10 +872,23 @@ object Form1: TForm1
       TabVisible = False
       object Label6: TLabel
         Left = 8
-        Top = 8
-        Width = 73
+        Top = 208
+        Width = 113
         Height = 13
-        Caption = 'All Messages'
+        Caption = 'Recorded Messages'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label106: TLabel
+        Left = 8
+        Top = 8
+        Width = 94
+        Height = 13
+        Caption = 'Filter Characters'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -801,36 +898,107 @@ object Form1: TForm1
       end
       object Label66: TLabel
         Left = 8
-        Top = 224
-        Width = 113
+        Top = 112
+        Width = 71
         Height = 13
-        Caption = 'Save chat via the menu'
-      end
-      object Label67: TLabel
-        Left = 8
-        Top = 248
-        Width = 68
-        Height = 13
-        Caption = 'Filter by user?'
-      end
-      object RichEdit1: TRichEdit
-        Left = 8
-        Top = 32
-        Width = 321
-        Height = 177
-        Color = clBtnFace
+        Caption = 'Chat Colours'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Lucida Console'
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object RichEdit1: TRichEdit
+        Left = 8
+        Top = 232
+        Width = 289
+        Height = 89
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        Color = clBtnFace
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Arial'
         Font.Style = []
         HideScrollBars = False
-        Lines.Strings = (
-          'RichEdit1')
         ParentFont = False
-        ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 0
+      end
+      object Button1: TButton
+        Left = 312
+        Top = 232
+        Width = 83
+        Height = 25
+        Caption = 'Hi&ghlight'
+        TabOrder = 1
+        OnClick = Button1Click
+      end
+      object ListBox4: TListBox
+        Left = 8
+        Top = 136
+        Width = 289
+        Height = 57
+        Style = lbOwnerDrawFixed
+        Columns = 6
+        ExtendedSelect = False
+        ItemHeight = 16
+        TabOrder = 2
+        OnClick = ListBox4Click
+        OnDrawItem = ListBox4DrawItem
+      end
+      object CheckListBox1: TCheckListBox
+        Left = 8
+        Top = 32
+        Width = 289
+        Height = 65
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ItemHeight = 16
+        ParentFont = False
+        TabOrder = 3
+      end
+      object Button2: TButton
+        Left = 312
+        Top = 32
+        Width = 81
+        Height = 25
+        Caption = '&All'
+        TabOrder = 4
+        OnClick = Button2Click
+      end
+      object Button3: TButton
+        Left = 312
+        Top = 64
+        Width = 81
+        Height = 25
+        Caption = '&None'
+        TabOrder = 5
+        OnClick = Button3Click
+      end
+      object Button4: TButton
+        Left = 312
+        Top = 136
+        Width = 81
+        Height = 25
+        Caption = 'Add'
+        TabOrder = 6
+        OnClick = Button4Click
+      end
+      object CheckBox1: TCheckBox
+        Left = 312
+        Top = 264
+        Width = 89
+        Height = 17
+        Caption = 'Keep markers'
+        Checked = True
+        State = cbChecked
+        TabOrder = 7
       end
     end
     object TabSheet7: TTabSheet
@@ -866,6 +1034,7 @@ object Form1: TForm1
       end
       object OpenGunZ2Replay1: TMenuItem
         Caption = 'O&pen GunZ 2 Replay..'
+        Enabled = False
       end
       object N1: TMenuItem
         Caption = '-'
@@ -902,8 +1071,8 @@ object Form1: TForm1
       '*.GZR|GunZ: The Duel Recording (*.REC)|*.REC'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
     Title = 'Open Replay'
-    Left = 340
-    Top = 14
+    Left = 476
+    Top = 6
   end
   object OpenDialog2: TOpenDialog
     Filter = 
@@ -911,14 +1080,14 @@ object Form1: TForm1
       '.replay.command)|*.replay.command'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
     Title = 'Open Replay'
-    Left = 340
-    Top = 38
+    Left = 508
+    Top = 6
   end
   object Timer1: TTimer
     Enabled = False
     Interval = 5
     OnTimer = Timer1Timer
-    Left = 340
-    Top = 70
+    Left = 540
+    Top = 6
   end
 end
